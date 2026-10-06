@@ -1,0 +1,23 @@
+# Real server. Values come from environment variables so no secrets live in the code.
+spring:
+  datasource:
+    url: ${DOCKET_DB_URL:jdbc:postgresql://localhost:5432/docket}
+    username: ${DOCKET_DB_USER:docket}
+    password: ${DOCKET_DB_PASSWORD}
+
+server:
+  port: ${DOCKET_PORT:8443}
+  ssl:
+    enabled: ${DOCKET_SSL_ENABLED:true}
+    key-store: ${DOCKET_KEYSTORE:file:./certs/docket.p12}
+    key-store-password: ${DOCKET_KEYSTORE_PASSWORD}
+    key-store-type: PKCS12
+
+docket:
+  storage-root: ${DOCKET_STORAGE_ROOT:D:/DocketData/storage}
+  seed-demo-data: false
+  key-password: ${DOCKET_KEY_PASSWORD}
+  soffice-path: ${DOCKET_SOFFICE:}
+  ffmpeg-path: ${DOCKET_FFMPEG:}
+  bootstrap-admin-login: ${DOCKET_BOOTSTRAP_ADMIN_LOGIN:}
+  bootstrap-admin-password: ${DOCKET_BOOTSTRAP_ADMIN_PASSWORD:}
