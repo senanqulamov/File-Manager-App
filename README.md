@@ -1,8 +1,8 @@
 <div align="center">
 
-<img src="docs/screenshots/logo.png" alt="PMIS Docket" width="96">
+<img src="docs/screenshots/logo.png" alt="Docket" width="96">
 
-# PMIS Docket
+# Docket
 
 **A file server and document control system for your company, in one desktop app.**
 
@@ -15,7 +15,7 @@ Browse your office server like Windows Explorer, then check out, version, share,
 ![Windows](https://img.shields.io/badge/Windows-10%20%7C%2011-1A1C24?style=flat-square)
 ![Self-hosted](https://img.shields.io/badge/Self--hosted-your%20server-1A1C24?style=flat-square)
 
-<img src="docs/screenshots/01-explorer.png" alt="PMIS Docket Explorer" width="100%">
+<img src="docs/screenshots/01-explorer.png" alt="Docket Explorer" width="100%">
 
 </div>
 
@@ -168,7 +168,7 @@ See the **[installation guide](docs/INSTALL.md)**. It covers PostgreSQL setup, t
 
 ## Licence and purchase
 
-PMIS Docket is commercial software. The source code in this repository is provided to licensed customers.
+Docket is commercial software. The source code in this repository is provided to licensed customers.
 
 | | **Standard** | **Business** |
 |---|---|---|
@@ -190,6 +190,6 @@ PMIS Docket is commercial software. The source code in this repository is provid
 
 <div align="center">
 
-Made by **PMIS** · © 2026 PMIS. All rights reserved.
+Made by **Senan Qulamov** · © 2026 48team. All rights reserved.
 
 </div>
