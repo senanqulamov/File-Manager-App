@@ -1,4 +1,4 @@
-Put the Urbanist font files here (free, SIL Open Font License):
-  Urbanist-Regular.ttf, Urbanist-Medium.ttf, Urbanist-SemiBold.ttf, Urbanist-Bold.ttf, Urbanist-ExtraBold.ttf
-Download: https://fonts.google.com/specimen/Urbanist  (Download family -> static folder)
-Without them the app falls back to Segoe UI, which also looks fine.
+Urbanist (the app font from the Docket design) is bundled here:
+Urbanist-Regular/Medium/SemiBold/Bold/ExtraBold.ttf
+Source: https://github.com/coreyhu/Urbanist  -  licence: SIL Open Font License 1.1 (OFL.txt), free for commercial use.
+DocketApp loads these at start-up; no installation on the PC is needed.
