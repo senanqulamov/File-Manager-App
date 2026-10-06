@@ -1,0 +1,46 @@
+name: Demo or commercial enquiry
+description: Discuss Docket for your team's document workflow.
+title: "[Enquiry] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for your interest in Docket. This form creates a PUBLIC issue.
+        Share only non-confidential information. Do not include personal contact details, internal addresses, procurement terms, or company documents. A private follow-up channel can be arranged before exchanging those details.
+  - type: dropdown
+    id: interest
+    attributes:
+      label: What would you like to discuss?
+      options:
+        - Product demonstration
+        - Controlled evaluation
+        - Deployment and commercial licence
+        - Source-code licensing
+    validations:
+      required: true
+  - type: dropdown
+    id: team-size
+    attributes:
+      label: Approximate team size
+      options:
+        - Prefer to discuss privately
+        - 1–10 people
+        - 11–50 people
+        - 51–200 people
+        - More than 200 people
+  - type: textarea
+    id: workflow
+    attributes:
+      label: Which workflow would you like to improve?
+      description: A high-level description is enough; use no confidential examples.
+    validations:
+      required: true
+  - type: checkboxes
+    id: acknowledgement
+    attributes:
+      label: Before submitting
+      options:
+        - label: I understand this is public and have not included confidential or personal information.
+          required: true
+        - label: I understand Docket is currently pre-release software for controlled evaluation.
+          required: true

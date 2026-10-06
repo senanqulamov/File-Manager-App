@@ -1,0 +1,40 @@
+name: Bug report
+description: Report a reproducible problem with a sanitised example.
+title: "[Bug] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Issues are public. Remove credentials, internal addresses, and document content.
+        For security issues, follow SECURITY.md instead of describing the problem here.
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Windows/server OS, Java version, local H2 or PostgreSQL, and relevant LibreOffice/FFmpeg versions.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: Use a small synthetic file or sample data, never a real company document.
+    validations:
+      required: true
+  - type: textarea
+    id: expected-actual
+    attributes:
+      label: Expected and actual behaviour
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Sanitised error excerpt
+      render: text

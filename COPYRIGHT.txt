@@ -1,0 +1,9 @@
+Docket
+Copyright (c) 2026 Senan Qulamov. All rights reserved.
+
+This software and its source code are the property of Senan Qulamov.
+No part of it may be copied, modified, distributed or sold without a written
+licence from the author.
+
+Third-party components retain their own licences. See THIRD-PARTY-NOTICES.md.
+Commercial enquiries: docs/COMMERCIAL.md.
