@@ -1,173 +1,195 @@
+<div align="center">
+
+<img src="docs/screenshots/logo.png" alt="PMIS Docket" width="96">
+
 # PMIS Docket
 
-File manager and document control for the PMIS company server.
+**A file server and document control system for your company, in one desktop app.**
 
-| Part | Folder | What it is |
-|---|---|---|
-| **Docket Server** | `server/` | Spring Boot service on the physical server. It is the only thing that touches the storage disk. It handles sign-in, folders, files, versions, permissions, sharing, the audit log, conversions, signatures, locking and stamps. |
-| **Docket Desktop** | `desktop/` | JavaFX app installed on each PC. It talks to the server over HTTP(S). |
-| **Installer** | `installer/` | Builds `PMIS-Docket-Setup-x.y.z.exe`, which includes its own Java. |
+Browse your office server like Windows Explorer, then check out, version, share, convert, sign, lock and stamp documents, with every action recorded in the audit log.
 
-```
-Desktop app (each PC)  ⇄  HTTPS  ⇄  Docket Server (server IP)  →  storage folder on the server's disk
-                                                     ↘  LibreOffice (Office files), FFmpeg (video/audio) — optional
-```
+![Java](https://img.shields.io/badge/Java-21-3B5BFF?style=flat-square)
+![JavaFX](https://img.shields.io/badge/JavaFX-21-3B5BFF?style=flat-square)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.3-1F8A4C?style=flat-square)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16+-1A1C24?style=flat-square)
+![Windows](https://img.shields.io/badge/Windows-10%20%7C%2011-1A1C24?style=flat-square)
+![Self-hosted](https://img.shields.io/badge/Self--hosted-your%20server-1A1C24?style=flat-square)
 
-## What's in this version
+<img src="docs/screenshots/01-explorer.png" alt="PMIS Docket Explorer" width="100%">
 
-**Places**
-- **Home** shows recent files and items shared with me.
-- **My files** is each person's private folder on the server.
-- **Company** holds shared folders with permissions per folder.
-- **Shared with me** lists what colleagues shared from their My files.
-- **Admin** is for IT administrators only.
+</div>
 
-**Browsing**
-- Folders and files appear together. Double-click a folder to open it.
-- Navigation: Back, Forward, Up, a clickable path bar, and Refresh.
-- Search inside the current folder, and filter by type: Documents, Images, Videos, Audio, Text & code, Archives, Apps & other.
-- Sort by name, date, type or size.
-- Views: large icons or details list, plus an optional **preview pane**.
+---
 
-**File operations**
-- New folder.
-- Upload with the button or by dragging files into the window.
-- Download.
-- Cut, Copy, Paste and Move.
-- Rename.
-- Delete with **Undo**. Deleted items go to the Recycle Bin on the server.
+## Why Docket
 
-**Viewer inside Docket**
-- **Pages:** PDF, Word, Excel, PowerPoint, with zoom and page navigation.
-- **Pictures**, including WebP.
-- **Video and audio player:** MP4, M4A, MP3, WAV.
-- **Text notes and code**, read-only.
-- **Archives:** lists ZIP, 7z and TAR contents, with **Extract here**.
-- **Anything else:** a "no preview" card with **Open with…** and **Download**.
+Shared network drives give you folders, but no control. People overwrite each other's files, nobody knows which version is the latest, and IT can't tell who opened what.
 
-**Check-out and versions**
-- Check out a file to edit it in Word, Excel and so on.
-- Others see it as being edited and can't change it.
-- Check in with a comment to create a new version, or discard the check-out.
-- Version history: open any old version, or restore it as a new version.
+Docket keeps the familiar Explorer feel and adds the document control companies need:
 
-**Share with a colleague**
-- Choose people, then "can view" or "can edit", and when access ends.
-- See and stop sharing in Properties › Sharing.
+- **Your server, your data.** Everything is stored on your own Windows server. There is no cloud and no subscription to a third-party service.
+- **Feels like Explorer.** Back, forward and up, a path bar, large icons or details, drag and drop, and the keyboard shortcuts people already know.
+- **Real document control.** Check-out and check-in, full version history, signatures, password protection, stamps and an audit trail that can't be edited.
+- **Permissions without Active Directory.** IT manages users and folder access in a built-in admin console.
 
-**Document actions**
+---
 
-| Action | What it does |
+## Features
+
+### Explorer for your company server
+
+<img src="docs/screenshots/02-home.png" alt="Home" width="100%">
+
+- **Four places to work:** **Home** (recent files and items shared with you), **My files** (each person's private folder), **Company** (shared folders with permissions per folder) and **Shared with me**.
+- **Browsing:** grid and details views, sort by name, date, type or size, a type filter (documents, images, videos, audio, text and code, archives) and search inside the current folder.
+- **File operations:** new folder, upload with the button or by dragging files in, download, cut, copy, paste, rename, and delete with **Undo**.
+- **Preview pane:** shows the selected file with its status and quick actions.
+- **Clear permissions:** read-only folders and locked items show it, and every disabled button explains why when you click it.
+
+### Viewer for every file type
+
+<img src="docs/screenshots/03-viewer.png" alt="Docket Viewer" width="100%">
+
+Files open inside Docket. Nothing needs installing on the PC to look at them.
+
+| Type | What you see |
 |---|---|
-| **Convert** | Offers only formats that fit the file and that the server can make. The original stays. |
-| **Sign** | Drawn or typed visible signature, plus a real digital signature with each user's PMIS certificate. PDFs get a new version. Office files become a signed PDF copy. |
-| **Lock** | AES-256 password. PDFs (with print and copy permissions) and DOCX/XLSX/PPTX keep their format. Other types become an encrypted ZIP. Docket never stores the password. |
-| **Mark** | Approved, Confidential, Draft, Copy, Paid, Rejected, or your own text. Applies to PDFs and pictures as a new version; Word and PowerPoint get a stamped PDF copy. |
+| PDF, Word, Excel, PowerPoint | Pages, with zoom and page navigation |
+| Pictures (PNG, JPG, GIF, BMP, WebP) | The picture, with zoom |
+| Video and audio (MP4, M4A, MP3, WAV) | A built-in player |
+| Text and code | A read-only text or code view |
+| ZIP, 7z, TAR archives | The list of contents, with **Extract here** |
+| Anything else | A clear card with **Open with…** and **Download** |
 
-**Properties** has four tabs: General, Versions, Sharing and Activity. Activity is the audit trail for that item.
+### Check-out, check-in and versions
 
-**Access denied** shows a **Request access** button, which sends a request to IT.
+<img src="docs/screenshots/04-versions.png" alt="Version history" width="100%">
 
-**Accounts**
-- Sign-in, change password, and forced password change for new accounts and resets.
+- **Check out** opens the file in Word, Excel or any other desktop app. Colleagues see *"Editing: Aylin K."* and can open the file, but can't change it.
+- **Check in** with a comment saves a new version. Docket knows whether you actually changed the file.
+- **Version history** shows who saved each version, when and why. You can open any old version or restore it as a new one; nothing is ever overwritten.
 
-**Admin console** (IT administrators)
-- **Users:** add users (shows a temporary password), and edit department, storage, role, active status, or reset the password.
-- **Folder permissions** per company folder: groups and people get No access, Read only, Read & write or Full control. Folders inherit from the folder above unless they have their own settings.
-- **Access requests:** approve or deny.
-- **Audit log:** filter, search and export to CSV.
-- **Server:** disk, users, check-outs, and whether LibreOffice and FFmpeg are installed.
-- **Recycle Bin:** restore items, or empty those older than 30 days.
-- **App updates:** upload a new installer, and every PC offers it at sign-in.
+### Convert, Sign, Lock and Stamp
 
-**Feel**
-- Custom window, animations everywhere, and Explorer keyboard shortcuts: Enter, Del, F2, F5, Alt+←/→/↑, Ctrl+C/X/V, Ctrl+D, Ctrl+E, Ctrl+F, Ctrl+U, Ctrl+Shift+N, Alt+Enter.
+<img src="docs/screenshots/05-sign.png" alt="Sign document" width="49%"> <img src="docs/screenshots/06-lock.png" alt="Lock with password" width="49%">
+
+- **Convert.** Word, Excel and PowerPoint to PDF, PDF to Word, images or text, pictures to PDF, PNG or JPG, CSV to Excel, video to MP4, MP3 or GIF, and audio to MP3 or WAV. Docket offers only the formats that make sense for each file.
+- **Sign.**
+  - You can draw your signature or type it. It is placed on the last page, the first page or every page.
+  - The visible signature is combined with a real digital signature (PKCS#7) using each user's personal certificate.
+  - Office files are signed as a PDF copy.
+- **Lock.**
+  - AES-256 password protection. PDFs get print and copy permissions; Word, Excel and PowerPoint files use Office's own encryption.
+  - Other files are wrapped in an encrypted ZIP.
+  - **Unlock** removes the password again. Docket never stores the password.
+- **Stamp.** Approved, Confidential, Draft, Copy, Paid, Rejected, or your own text, on PDFs and pictures.
+
+### Share with colleagues
+
+<img src="docs/screenshots/07-share.png" alt="Share dialog" width="100%">
+
+- Share any file or folder from **My files** with chosen colleagues, either **Can view** or **Can edit**.
+- Set when access ends: 1 day, 7 days, 30 days or never.
+- People find shared items under **Shared with me**. You can stop sharing at any time.
+
+### Admin console for IT
+
+<img src="docs/screenshots/08-admin-users.png" alt="Admin console: users" width="100%">
+
+- **Users.** Add people (a temporary password is shown once), edit department, storage quota and role, disable accounts (which signs them out at once), reset passwords and delete users. When you delete someone, you can hand their files to a colleague.
+- **Folder permissions.** For every company folder, choose *No access*, *Read only*, *Read & write* or *Full control* for groups and individual people. Folders inherit from their parent unless they have their own settings.
+- **Access requests.** People who are refused access to a folder can ask for it, and IT approves or denies with one click.
+- **Audit log.** Every open, edit, share, delete, permission change and sign-in is recorded. You can filter, search and export to CSV, and entries can't be edited.
+- **Server.** Disk use, users, files being edited, pending requests, and whether the conversion tools are installed.
+- **Recycle Bin.** Restore anything deleted, or empty items older than 30 days.
+- **App updates.** Upload a new installer, and every PC offers it at the next sign-in.
+
+<img src="docs/screenshots/09-admin-permissions.png" alt="Folder permissions" width="49%"> <img src="docs/screenshots/10-admin-audit.png" alt="Audit log" width="49%">
+
+### Sign-in and installer
+
+<img src="docs/screenshots/11-sign-in.png" alt="Sign in" width="49%"> <img src="docs/screenshots/12-installer.png" alt="Installer" width="49%">
+
+- **Sign-in:** a server reachability check, and a forced password change for new accounts and resets.
+- **Windows installer:** includes its own Java, so nothing else needs installing on the PCs. It comes with the server address preset and supports silent install for IT.
 
 ---
 
-## 1. Test everything on one PC
+## How it works
 
-**You need:**
-- **JDK 21** and **Maven 3.9+** on Windows 10 or 11.
-- **LibreOffice** (free, https://www.libreoffice.org), for Word, Excel and PowerPoint previews and conversions, and for signing and stamping Office files. Recommended.
-- **FFmpeg** (https://www.gyan.dev/ffmpeg/builds, "essentials"), for video and audio conversion. Optional. Put `ffmpeg.exe` on PATH or set `docket.ffmpeg-path`.
+```
+ Desktop app (each PC)  ──HTTPS──▶  Docket Server  ──▶  PostgreSQL (metadata, users, audit)
+   JavaFX 21                          Spring Boot 3   ──▶  Storage folder on the server's disk
+                                                      ──▶  LibreOffice / FFmpeg (optional, conversions)
+```
 
-Without LibreOffice or FFmpeg everything else still works, and the related buttons explain what's missing.
+- **Only the server touches the storage disk.** PCs never get direct access to the files, so permissions can't be bypassed through Windows Explorer.
+- **Files are stored safely.** Content is stored once and never overwritten. Versions, copies and renames don't duplicate data.
+- **Permissions are checked twice.** The app checks them so it can explain what's allowed, and the server checks them again on every request.
 
-> **If you ran the first version before:** stop the server and double-click **`reset-demo-data.cmd`**. The database layout changed, so the old test data must be removed once.
+---
 
-**Steps:**
-1. Double-click **`run-server-local.cmd`**. The server starts at http://localhost:8080 and creates demo data on the first start.
+## Requirements
+
+**Server**
+- Windows Server 2019 or newer (Linux also works)
+- Java 21
+- PostgreSQL 16 or newer
+- Optional: **LibreOffice** for Office previews, conversions, and signing or stamping Office files
+- Optional: **FFmpeg** for video and audio conversion
+
+**PCs**
+- Windows 10 or 11
+- The installer includes Java, so nothing else is needed
+
+---
+
+## Quick start: try it on one PC
+
+You need JDK 21 and Maven 3.9 or newer.
+
+1. Double-click **`run-server-local.cmd`**. This starts a test server with demo data at http://localhost:8080.
 2. Double-click **`run-desktop.cmd`**.
-3. Sign in. The password for all demo accounts is **`Docket2026!`**
+3. Sign in with any demo account. The password for all of them is **`Docket2026!`**
 
-| Username | Who | Good for testing |
+| Username | Role | Try this |
 |---|---|---|
-| `a.karimova` | Aylin, Finance | My files with every file type. Shares the lease with Tural. Has "Q4 board pack" shared with her (can edit). Finance is read & write. Legal and Templates are read only. HR, IT and Management have no access, so try Request access. |
-| `t.mammadli` | Tural, Management | Has **Q3 forecast** checked out (Company › Departments › Finance › Budgets). Sees the lease under Shared with me. |
-| `l.rahimli` | Leyla, HR | HR and Policies have full control. |
-| `s.novruzova` | Sabina, Operations | Already asked IT for access to Management. |
-| `r.aliyev` | Rashad, **IT administrator** | Admin console: users, permissions, requests, audit, server, Recycle Bin, updates. |
-| `k.huseynov` | Kamran, Legal | Disabled account. |
+| `a.karimova` | Finance | My files with every file type, sharing, sign, lock and stamp |
+| `t.mammadli` | Management | A file checked out by him, and items shared with him |
+| `r.aliyev` | IT administrator | The admin console |
 
-**Testing two people at once.** Run `run-desktop.cmd` twice and sign in as different users. For example, check out a file as Aylin and look at it as Tural.
+To start again with fresh demo data, run `reset-demo-data.cmd`.
 
----
+## Installing for real
 
-## 2. Install on the real server
-
-1. **Install software:** Java 21, PostgreSQL 16+, LibreOffice and FFmpeg (optional). Create database `docket` and user `docket`.
-2. **Build the server:** `cd server && mvn clean package` gives you `server/target/docket-server.jar`.
-3. **Create the HTTPS certificate** for the server's IP:
-   ```
-   keytool -genkeypair -alias docket -keyalg RSA -keysize 3072 -validity 1825 -storetype PKCS12 ^
-     -keystore certs\docket.p12 -dname "CN=PMIS Docket" -ext "SAN=IP:192.168.1.10"
-   keytool -exportcert -alias docket -keystore certs\docket.p12 -rfc -file certs\docket.cer
-   ```
-4. **Set the environment variables:**
-
-   | Variable | Example / meaning |
-   |---|---|
-   | `DOCKET_DB_URL` | `jdbc:postgresql://localhost:5432/docket` |
-   | `DOCKET_DB_USER`, `DOCKET_DB_PASSWORD` | database user |
-   | `DOCKET_STORAGE_ROOT` | `D:/DocketData/storage` (where files are kept) |
-   | `DOCKET_KEYSTORE_PASSWORD` | password given to keytool |
-   | `DOCKET_KEY_PASSWORD` | long random secret that protects users' signing keys |
-   | `DOCKET_BOOTSTRAP_ADMIN_LOGIN` / `_PASSWORD` | first IT admin, created once when the database is empty |
-   | `DOCKET_SOFFICE`, `DOCKET_FFMPEG` | full paths if not in the usual places |
-
-5. **Start it:** `java -jar docket-server.jar --spring.profiles.active=prod`. Run it as a Windows service with WinSW or NSSM, and open port 8443 for the office network only.
-6. **Create the real users.** Sign in as the bootstrap admin, change the password, then add users and folder permissions in **Admin**.
-
-**Backups:** back up the PostgreSQL database **and** the storage folder together.
+See the **[installation guide](docs/INSTALL.md)**. It covers PostgreSQL setup, the HTTPS certificate, server environment variables, running Docket as a Windows service, creating the first administrator, building the installer and backups.
 
 ---
 
-## 3. Build the installer (.exe)
+## Licence and purchase
 
-**You need on the build PC:** JDK 21, Maven, and **Inno Setup 6** (https://jrsoftware.org/isdl.php).
+PMIS Docket is commercial software. The source code in this repository is provided to licensed customers.
 
-**Run:**
+| | **Standard** | **Business** |
+|---|---|---|
+| Users | Up to [N] | Unlimited |
+| Full source code | ✓ | ✓ |
+| Installer branded with your company name | ✓ | ✓ |
+| Updates for | [12 months] | [12 months] |
+| Installation help | Email | Remote session |
+| Price | [price] | [price] |
 
-```
-powershell -ExecutionPolicy Bypass -File installer\build-installer.ps1 -ServerUrl https://192.168.1.10:8443 -ServerCert certs\docket.cer -Version 1.0.0
-```
+**To buy a licence or book a demo:** [your email] · [your website]
 
-The result is `build\installer\PMIS-Docket-Setup-1.0.0.exe`.
+---
 
-**Silent install for IT:**
+## Support
 
-```
-PMIS-Docket-Setup-1.0.0.exe /VERYSILENT /server=https://192.168.1.10:8443
-```
+- **Bugs and questions:** [your email or issue link]
+- **Response time:** [e.g. within 1 business day]
 
-**Updates:**
-1. Change `APP_VERSION` in `desktop/.../AppConfig.java`.
-2. Build with the same `-Version`.
-3. In **Admin › App updates**, upload the `.exe`.
+<div align="center">
 
-Every PC offers the update at sign-in.
+Made by **PMIS** · © 2026 PMIS. All rights reserved.
 
-**Code signing:** enable `SignTool` in `installer/PMIS-Docket.iss` once you have a certificate.
-
-**Branding:** see `installer/assets/README.txt` and `desktop/.../fonts/README.txt`.
+</div>
