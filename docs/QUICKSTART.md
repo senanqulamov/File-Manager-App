@@ -56,8 +56,8 @@ Close the desktop and stop the server with Ctrl+C. The launcher runs from `serve
 | Unsupported release / class version | `mvn -version` must show JDK 21; the IDE and terminal may use different JDKs. |
 | Desktop cannot connect | Keep the server running; check `/api/health`, the server address, and firewall rules. |
 | Port 8080 already used | Stop the other service or configure a different port and match the desktop URL. |
-| Office preview unavailable | Install LibreOffice on the server and set `DOCKET_SOFFICE` if discovery fails. |
-| Media conversion unavailable | Install FFmpeg on the server and set `DOCKET_FFMPEG` if needed. |
+| Office preview unavailable | Install LibreOffice on the server; configure `docket.soffice-path` if discovery fails (`DOCKET_SOFFICE` in the production profile). |
+| Media conversion unavailable | Install FFmpeg on the server; configure `docket.ffmpeg-path` if needed (`DOCKET_FFMPEG` in the production profile). |
 | Document does not open for editing | Install an application associated with that file format. |
 | Old local schema prevents startup | Preserve any needed files first; reset only disposable demo data. |
 
