@@ -1,195 +1,119 @@
 <div align="center">
 
-<img src="docs/screenshots/logo.png" alt="Docket" width="96">
+<img src="docs/brand/docket-banner.svg" alt="Docket — Company documents. Under control." width="100%">
 
-# Docket
+**A familiar desktop workspace for company files, document versions, and controlled sharing.**
 
-**A file server and document control system for your company, in one desktop app.**
+Windows desktop · Self-hosted server · Java 21
 
-Browse your office server like Windows Explorer, then check out, version, share, convert, sign, lock and stamp documents, with every action recorded in the audit log.
-
-![Java](https://img.shields.io/badge/Java-21-3B5BFF?style=flat-square)
-![JavaFX](https://img.shields.io/badge/JavaFX-21-3B5BFF?style=flat-square)
-![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.3-1F8A4C?style=flat-square)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16+-1A1C24?style=flat-square)
-![Windows](https://img.shields.io/badge/Windows-10%20%7C%2011-1A1C24?style=flat-square)
-![Self-hosted](https://img.shields.io/badge/Self--hosted-your%20server-1A1C24?style=flat-square)
-
-<img src="docs/screenshots/01-explorer.png" alt="Docket Explorer" width="100%">
+[**Request a demo →**](https://github.com/senanqulamov/File-Manager-App/issues/new?template=demo-request.yml) · [Product tour](docs/PRODUCT-TOUR.md) · [Try locally](docs/QUICKSTART.md) · [Commercial enquiries](docs/COMMERCIAL.md)
 
 </div>
 
----
+<br>
 
-## Why Docket
+![Docket Explorer design showing company folders, document actions, and a preview pane](docs/screenshots/01-explorer.png)
 
-Shared network drives give you folders, but no control. People overwrite each other's files, nobody knows which version is the latest, and IT can't tell who opened what.
+<sub>Product design preview. The gallery uses supplied design references, not a recording of a tested release. Current desktop and installer builds carry PMIS Docket branding.</sub>
 
-Docket keeps the familiar Explorer feel and adds the document control companies need:
+## Keep the work. Keep the history.
 
-- **Your server, your data.** Everything is stored on your own Windows server. There is no cloud and no subscription to a third-party service.
-- **Feels like Explorer.** Back, forward and up, a path bar, large icons or details, drag and drop, and the keyboard shortcuts people already know.
-- **Real document control.** Check-out and check-in, full version history, signatures, password protection, stamps and an audit trail that can't be edited.
-- **Permissions without Active Directory.** IT manages users and folder access in a built-in admin console.
+Docket brings file browsing, document control, and IT administration into one desktop application. Teams work with personal files and company folders, reserve documents for editing, and check changes back in with a version comment.
 
----
+The server runs on infrastructure managed by your organisation. It stores document content and metadata centrally; the desktop connects through the application API.
 
-## Features
+| For your team | For your IT administrator |
+| :--- | :--- |
+| Browse files with a familiar Explorer-style interface | Manage accounts and company-folder permissions |
+| Check documents out, edit in a desktop app, then check them in | Review access requests and recorded activity |
+| Revisit earlier versions and share with selected colleagues | Manage user quotas, deleted items, and client updates |
+| Preview supported formats and use document tools in one place | Operate the database and storage on your own infrastructure |
 
-### Explorer for your company server
+## One workspace, from file to finished document
 
-<img src="docs/screenshots/02-home.png" alt="Home" width="100%">
+**01 · Find and open**
 
-- **Four places to work:** **Home** (recent files and items shared with you), **My files** (each person's private folder), **Company** (shared folders with permissions per folder) and **Shared with me**.
-- **Browsing:** grid and details views, sort by name, date, type or size, a type filter (documents, images, videos, audio, text and code, archives) and search inside the current folder.
-- **File operations:** new folder, upload with the button or by dragging files in, download, cut, copy, paste, rename, and delete with **Undo**.
-- **Preview pane:** shows the selected file with its status and quick actions.
-- **Clear permissions:** read-only folders and locked items show it, and every disabled button explains why when you click it.
+Move between Home, My files, Company, and Shared with me. Browse in grid or details view, filter by file type, and inspect a file in the preview pane.
 
-### Viewer for every file type
+**02 · Edit with a history**
 
-<img src="docs/screenshots/03-viewer.png" alt="Docket Viewer" width="100%">
+Check out a document to work in its associated desktop application. Check it back in with a comment, inspect previous versions, or restore an earlier version as a new one.
 
-Files open inside Docket. Nothing needs installing on the PC to look at them.
+**03 · Prepare and share**
 
-| Type | What you see |
-|---|---|
-| PDF, Word, Excel, PowerPoint | Pages, with zoom and page navigation |
-| Pictures (PNG, JPG, GIF, BMP, WebP) | The picture, with zoom |
-| Video and audio (MP4, M4A, MP3, WAV) | A built-in player |
-| Text and code | A read-only text or code view |
-| ZIP, 7z, TAR archives | The list of contents, with **Extract here** |
-| Anything else | A clear card with **Open with…** and **Download** |
+Convert supported formats, sign PDFs, apply a stamp, or password-protect a file. Share personal items with named colleagues and an optional expiry date.
 
-### Check-out, check-in and versions
+<table>
+<tr>
+<td width="50%"><img src="docs/screenshots/04-versions.png" alt="Design preview of document version history"><br><strong>Follow the changes.</strong> Versions with author, date, and comments.</td>
+<td width="50%"><img src="docs/screenshots/09-admin-permissions.png" alt="Design preview of folder permissions"><br><strong>Manage access.</strong> Company-folder permissions for people and groups.</td>
+</tr>
+</table>
 
-<img src="docs/screenshots/04-versions.png" alt="Version history" width="100%">
+[Explore the full product tour →](docs/PRODUCT-TOUR.md)
 
-- **Check out** opens the file in Word, Excel or any other desktop app. Colleagues see *"Editing: Aylin K."* and can open the file, but can't change it.
-- **Check in** with a comment saves a new version. Docket knows whether you actually changed the file.
-- **Version history** shows who saved each version, when and why. You can open any old version or restore it as a new one; nothing is ever overwritten.
+## What is implemented
 
-### Convert, Sign, Lock and Stamp
+| Area | Capabilities in the source |
+| :--- | :--- |
+| File workspace | Upload, download, folders, rename, move, copy, search in the current folder, recycle bin |
+| Document history | Check-out/check-in, comments, version listing and restoration |
+| Sharing | Personal file/folder sharing, view or edit access, expiry dates |
+| Document tools | Supported conversions, PDF digital signing, password protection, unlocking, stamps |
+| Administration | Users, folder ACLs, access requests, audit search/export, server statistics, update upload |
+| Distribution | Windows packaging scripts, bundled Java runtime, configurable server address |
 
-<img src="docs/screenshots/05-sign.png" alt="Sign document" width="49%"> <img src="docs/screenshots/06-lock.png" alt="Lock with password" width="49%">
+Office previews and selected document operations require **LibreOffice on the server**. Media conversions require **FFmpeg**. Editing a checked-out file requires an appropriate application on the PC. See the [capability and dependency details](docs/PRODUCT-TOUR.md).
 
-- **Convert.** Word, Excel and PowerPoint to PDF, PDF to Word, images or text, pictures to PDF, PNG or JPG, CSV to Excel, video to MP4, MP3 or GIF, and audio to MP3 or WAV. Docket offers only the formats that make sense for each file.
-- **Sign.**
-  - You can draw your signature or type it. It is placed on the last page, the first page or every page.
-  - The visible signature is combined with a real digital signature (PKCS#7) using each user's personal certificate.
-  - Office files are signed as a PDF copy.
-- **Lock.**
-  - AES-256 password protection. PDFs get print and copy permissions; Word, Excel and PowerPoint files use Office's own encryption.
-  - Other files are wrapped in an encrypted ZIP.
-  - **Unlock** removes the password again. Docket never stores the password.
-- **Stamp.** Approved, Confidential, Draft, Copy, Paid, Rejected, or your own text, on PDFs and pictures.
+## Evaluate Docket
 
-### Share with colleagues
+**For a company evaluating the product:** [request a demo](https://github.com/senanqulamov/File-Manager-App/issues/new?template=demo-request.yml). Describe your team size and document workflow without sharing confidential information. Scope, deployment, support, and commercial terms are agreed directly with the maintainer.
 
-<img src="docs/screenshots/07-share.png" alt="Share dialog" width="100%">
+**For an authorised technical evaluation:** install JDK 21 and Maven 3.9+, then run these scripts in separate windows on a Windows PC:
 
-- Share any file or folder from **My files** with chosen colleagues, either **Can view** or **Can edit**.
-- Set when access ends: 1 day, 7 days, 30 days or never.
-- People find shared items under **Shared with me**. You can stop sharing at any time.
-
-### Admin console for IT
-
-<img src="docs/screenshots/08-admin-users.png" alt="Admin console: users" width="100%">
-
-- **Users.** Add people (a temporary password is shown once), edit department, storage quota and role, disable accounts (which signs them out at once), reset passwords and delete users. When you delete someone, you can hand their files to a colleague.
-- **Folder permissions.** For every company folder, choose *No access*, *Read only*, *Read & write* or *Full control* for groups and individual people. Folders inherit from their parent unless they have their own settings.
-- **Access requests.** People who are refused access to a folder can ask for it, and IT approves or denies with one click.
-- **Audit log.** Every open, edit, share, delete, permission change and sign-in is recorded. You can filter, search and export to CSV, and entries can't be edited.
-- **Server.** Disk use, users, files being edited, pending requests, and whether the conversion tools are installed.
-- **Recycle Bin.** Restore anything deleted, or empty items older than 30 days.
-- **App updates.** Upload a new installer, and every PC offers it at the next sign-in.
-
-<img src="docs/screenshots/09-admin-permissions.png" alt="Folder permissions" width="49%"> <img src="docs/screenshots/10-admin-audit.png" alt="Audit log" width="49%">
-
-### Sign-in and installer
-
-<img src="docs/screenshots/11-sign-in.png" alt="Sign in" width="49%"> <img src="docs/screenshots/12-installer.png" alt="Installer" width="49%">
-
-- **Sign-in:** a server reachability check, and a forced password change for new accounts and resets.
-- **Windows installer:** includes its own Java, so nothing else needs installing on the PCs. It comes with the server address preset and supports silent install for IT.
-
----
-
-## How it works
-
-```
- Desktop app (each PC)  ──HTTPS──▶  Docket Server  ──▶  PostgreSQL (metadata, users, audit)
-   JavaFX 21                          Spring Boot 3   ──▶  Storage folder on the server's disk
-                                                      ──▶  LibreOffice / FFmpeg (optional, conversions)
+```bat
+run-server-local.cmd
+run-desktop.cmd
 ```
 
-- **Only the server touches the storage disk.** PCs never get direct access to the files, so permissions can't be bypassed through Windows Explorer.
-- **Files are stored safely.** Content is stored once and never overwritten. Versions, copies and renames don't duplicate data.
-- **Permissions are checked twice.** The app checks them so it can explain what's allowed, and the server checks them again on every request.
+Connect to `http://localhost:8080`. Demo user: `a.karimova`; demo password: `Docket2026!`. For the administrator view, use `r.aliyev` with the same demo password. Use sample documents only and keep the demo server on an isolated machine or network.
+
+[Full quick start and troubleshooting →](docs/QUICKSTART.md)
+
+## Deployment at a glance
+
+| Component | Role |
+| :--- | :--- |
+| JavaFX desktop | Windows user interface and connection to the server |
+| Spring Boot server | Authentication, file operations, document tools, and administration |
+| PostgreSQL | Production metadata, accounts, permissions, versions, and audit records |
+| Server storage | Document blobs, signing keys, and uploaded client installers |
+| Optional tools | LibreOffice for Office operations; FFmpeg for media conversion |
+
+[Installation guide](docs/INSTALL.md) · [Architecture](docs/ARCHITECTURE.md) · [Release process](docs/RELEASING.md)
+
+## Current stage
+
+**Pre-release software for controlled evaluation.** Implemented features are not a claim of production certification. Production database and HTTPS deployment, permission boundaries, concurrent editing, large files, backup restoration, and Windows installer behaviour still require release validation. Repository build checks do not replace those tests.
+
+Signing uses Docket-generated certificates; external identity trust requires a separate certificate arrangement. The audit log is application-level history, not a tamper-proof compliance archive. The installer is not currently publisher-signed.
+
+[Read the readiness checklist and known limitations →](docs/STATUS.md)
+
+## Documentation
+
+| Start here | Reference |
+| :--- | :--- |
+| [Product tour](docs/PRODUCT-TOUR.md) | Screens and supported workflows |
+| [Commercial enquiries](docs/COMMERCIAL.md) | Demo, evaluation, deployment, and licensing discussions |
+| [Quick start](docs/QUICKSTART.md) | Run the local sample environment |
+| [Installation](docs/INSTALL.md) | Prepare a controlled server deployment |
+| [Support](SUPPORT.md) | Report a problem or ask a question |
+| [Security](SECURITY.md) | Report a security concern privately |
+| [Contributing](CONTRIBUTING.md) | Development and review conventions |
 
 ---
 
-## Requirements
+**Docket** · Created by [Senan Qulamov](https://github.com/senanqulamov)
 
-**Server**
-- Windows Server 2019 or newer (Linux also works)
-- Java 21
-- PostgreSQL 16 or newer
-- Optional: **LibreOffice** for Office previews, conversions, and signing or stamping Office files
-- Optional: **FFmpeg** for video and audio conversion
-
-**PCs**
-- Windows 10 or 11
-- The installer includes Java, so nothing else is needed
-
----
-
-## Quick start: try it on one PC
-
-You need JDK 21 and Maven 3.9 or newer.
-
-1. Double-click **`run-server-local.cmd`**. This starts a test server with demo data at http://localhost:8080.
-2. Double-click **`run-desktop.cmd`**.
-3. Sign in with any demo account. The password for all of them is **`Docket2026!`**
-
-| Username | Role | Try this |
-|---|---|---|
-| `a.karimova` | Finance | My files with every file type, sharing, sign, lock and stamp |
-| `t.mammadli` | Management | A file checked out by him, and items shared with him |
-| `r.aliyev` | IT administrator | The admin console |
-
-To start again with fresh demo data, run `reset-demo-data.cmd`.
-
-## Installing for real
-
-See the **[installation guide](docs/INSTALL.md)**. It covers PostgreSQL setup, the HTTPS certificate, server environment variables, running Docket as a Windows service, creating the first administrator, building the installer and backups.
-
----
-
-## Licence and purchase
-
-Docket is commercial software. The source code in this repository is provided to licensed customers.
-
-| | **Standard** | **Business** |
-|---|---|---|
-| Users | Up to [N] | Unlimited |
-| Full source code | ✓ | ✓ |
-| Installer branded with your company name | ✓ | ✓ |
-| Updates for | [12 months] | [12 months] |
-| Installation help | Email | Remote session |
-| Price | [price] | [price] |
-
-**To buy a licence or book a demo:** [your email] · [your website]
-
----
-
-## Support
-
-- **Bugs and questions:** [your email or issue link]
-- **Response time:** [e.g. within 1 business day]
-
-<div align="center">
-
-Made by **Senan Qulamov** · © 2026 48team. All rights reserved.
-
-</div>
+Commercial software. All rights reserved. Public source visibility does not grant an open-source licence. See [COPYRIGHT.txt](COPYRIGHT.txt) and [commercial enquiries](docs/COMMERCIAL.md).

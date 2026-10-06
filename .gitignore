@@ -1,2 +1,27 @@
-# Runtime document storage and embedded database
-server/docket-data/
+# Build products
+**/target/
+/build/
+/.build/
+*.class
+
+# Runtime state, document content, database files and local credentials
+**/docket-data/
+*.mv.db
+*.trace.db
+*.log
+.env
+.env.*
+!.env.example
+/certs/
+*.p12
+*.pfx
+*.jks
+*.key
+
+# Editor and operating-system files
+.idea/
+*.iml
+.vscode/
+.DS_Store
+Thumbs.db
+__pycache__/

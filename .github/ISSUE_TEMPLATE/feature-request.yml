@@ -1,0 +1,21 @@
+name: Feature request
+description: Explain a document-workflow problem and the improvement you need.
+title: "[Feature] "
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem are you trying to solve?
+      description: Describe who is affected and how the workflow works today. Keep company details confidential.
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Desired outcome
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives or workarounds
