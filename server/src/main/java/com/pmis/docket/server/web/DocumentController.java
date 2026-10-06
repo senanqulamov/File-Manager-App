@@ -70,6 +70,12 @@ public class DocumentController {
         return docs.lock(user, computer, id, req.password(), req.allowPrint(), req.allowCopy());
     }
 
+    @PostMapping("/unlock")
+    public ActionResult unlock(@RequestAttribute(U) User user, @RequestAttribute(value = C, required = false) String computer,
+                               @PathVariable Long id, @RequestBody UnlockRequest req) {
+        return docs.unlock(user, computer, id, req.password());
+    }
+
     @PostMapping("/stamp")
     public ActionResult stamp(@RequestAttribute(U) User user, @RequestAttribute(value = C, required = false) String computer,
                               @PathVariable Long id, @RequestBody StampRequest req) {

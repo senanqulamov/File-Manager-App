@@ -133,7 +133,7 @@ public class ViewerView {
         HBox docGroup = new HBox(1,
                 iconBtn(Icons.CONVERT, "Convert", true, "convert"),
                 iconBtn(Icons.SIGN, "Sign", FileKinds.canSign(n.ext()) && n.canWrite() && !n.locked() && !n.checkedOutByOther(), "sign"),
-                iconBtn(Icons.LOCK, "Lock with password", n.canWrite() && !n.locked() && !n.checkedOutByOther(), "lock"),
+                iconBtn(Icons.LOCK, n.locked() ? "Unlock" : "Lock with password", n.canWrite() && !n.checkedOutByOther(), "lock"),
                 iconBtn(Icons.STAMP, "Stamp", FileKinds.canStamp(n.ext()) && n.canWrite() && !n.locked() && !n.checkedOutByOther(), "mark"));
         docGroup.getStyleClass().add("tool-group");
         docGroup.setMinWidth(Region.USE_PREF_SIZE);
@@ -490,7 +490,7 @@ public class ViewerView {
 
     private String whyNot(String action) {
         if (n.checkedOutByOther()) return n.checkedOutByName() + " is editing this file.";
-        if (n.locked() && !action.equals("convert")) return "Locked files can’t be changed.";
+        if (n.locked() && !action.equals("convert") && !action.equals("lock")) return "Locked files can’t be changed. Unlock it first.";
         if (!n.canWrite()) return "You have read-only access to this file.";
         return switch (action) {
             case "sign" -> FileKinds.plural(n.ext()) + " can’t be signed.";

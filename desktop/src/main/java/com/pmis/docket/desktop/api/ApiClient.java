@@ -184,6 +184,10 @@ public class ApiClient {
         return post("/api/nodes/" + id + "/lock", Map.of("password", password, "allowPrint", allowPrint, "allowCopy", allowCopy), new TypeReference<>() { });
     }
 
+    public Model.ActionResult unlock(long id, String password) {
+        return post("/api/nodes/" + id + "/unlock", Map.of("password", password), new TypeReference<>() { });
+    }
+
     public Model.ActionResult stamp(long id, String text, String color) {
         Map<String, Object> body = new HashMap<>();
         body.put("text", text);
@@ -199,6 +203,11 @@ public class ApiClient {
 
     public Model.AdminUser updateUser(long id, Map<String, Object> body) {
         return send(jsonRequest("/api/admin/users/" + id).method("PATCH", jsonBody(body)), new TypeReference<>() { });
+    }
+
+    public Model.Message deleteUser(long id, Long transferTo, boolean deleteFiles) {
+        String q = transferTo != null ? "?transferTo=" + transferTo : "?deleteFiles=" + deleteFiles;
+        return send(request("/api/admin/users/" + id + q).header("Accept", "application/json").DELETE(), new TypeReference<>() { });
     }
 
     public Model.TempPassword resetPassword(long id) { return post("/api/admin/users/" + id + "/reset-password", Map.of(), new TypeReference<>() { }); }

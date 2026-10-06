@@ -197,6 +197,9 @@ public class ExplorerView {
         HBox pills = new HBox(2, pillHome, pillMine, pillCompany);
         if (user.isAdmin()) pills.getChildren().add(pillAdmin);
         pills.getStyleClass().add("pill-group");
+        pills.setAlignment(Pos.CENTER);
+        pills.setFillHeight(false);
+        pills.setMaxHeight(Region.USE_PREF_SIZE);
         return pills;
     }
 
@@ -221,6 +224,8 @@ public class ExplorerView {
         account.setOnAction(e -> menu.show(account, Side.BOTTOM, -140, 6));
         HBox box = new HBox(8, sync, account);
         box.setAlignment(Pos.CENTER_RIGHT);
+        box.setFillHeight(false);
+        box.setMaxHeight(Region.USE_PREF_SIZE);
         return box;
     }
 
@@ -274,7 +279,7 @@ public class ExplorerView {
         shareBtn = new ToolButton(Icons.PEOPLE, "Share", "Share with a colleague", () -> DocDialogs.share(frame, api, selected, this::reload), explain);
         convertBtn = new ToolButton(Icons.CONVERT, "Convert", "Convert to another format", () -> DocDialogs.convert(frame, api, selected, this::afterAction), explain);
         signBtn = new ToolButton(Icons.SIGN, "Sign", "Sign with your certificate", () -> DocDialogs.sign(frame, api, user, selected, this::afterAction), explain);
-        lockBtn = new ToolButton(Icons.LOCK, "Lock", "Lock with a password", () -> DocDialogs.lock(frame, api, selected, this::afterAction), explain);
+        lockBtn = new ToolButton(Icons.LOCK, "Lock", "Lock with a password / unlock", () -> lockOrUnlock(selected), explain);
         markBtn = new ToolButton(Icons.STAMP, "Mark", "Stamp or watermark", () -> DocDialogs.stamp(frame, api, selected, this::afterAction), explain);
         propsBtn = new ToolButton(Icons.INFO, null, "Properties (Alt+Enter)", () -> props(selected != null ? selected : current, "General"), explain);
 
@@ -939,7 +944,7 @@ public class ExplorerView {
             grid.setHgap(6);
             grid.setVgap(6);
             ToolButton[] bs = {convertBtn, signBtn, lockBtn, markBtn, checkBtn, shareBtn};
-            String[][] defs = {{Icons.CONVERT, "Convert"}, {Icons.SIGN, "Sign"}, {Icons.LOCK, "Lock"}, {Icons.STAMP, "Mark"},
+            String[][] defs = {{Icons.CONVERT, "Convert"}, {Icons.SIGN, "Sign"}, {Icons.LOCK, n.locked() ? "Unlock" : "Lock"}, {Icons.STAMP, "Mark"},
                     {Icons.EDIT_MARK, n.checkedOutByMe() ? "Check in" : "Check out"}, {Icons.PEOPLE, "Share"}};
             for (int i = 0; i < bs.length; i++) {
                 ToolButton src = bs[i];
@@ -992,7 +997,7 @@ public class ExplorerView {
             m.getItems().add(new SeparatorMenuItem());
             m.getItems().add(item("Convert…", null, () -> DocDialogs.convert(frame, api, n, this::afterAction), convertBtn.allowed()));
             m.getItems().add(item("Sign…", null, () -> DocDialogs.sign(frame, api, user, n, this::afterAction), signBtn.allowed()));
-            m.getItems().add(item("Lock with password…", null, () -> DocDialogs.lock(frame, api, n, this::afterAction), lockBtn.allowed()));
+            m.getItems().add(item(n.locked() ? "Unlock…" : "Lock with password…", null, () -> lockOrUnlock(n), lockBtn.allowed()));
             m.getItems().add(item("Stamp…", null, () -> DocDialogs.stamp(frame, api, n, this::afterAction), markBtn.allowed()));
         } else {
             m.getItems().add(item("Open folder", new KeyCodeCombination(KeyCode.ENTER), () -> open(n), !n.noAccess()));
@@ -1051,7 +1056,7 @@ public class ExplorerView {
         if (!n.isFile()) return "Choose a file, not a folder.";
         if (n.checkedOutByOther()) return n.checkedOutByName() + " is editing “" + n.fullName() + "” right now.";
         if (!n.canWrite()) return "You have read-only access to " + n.fullName() + ".";
-        if (n.locked() && !what.equals("checkout")) return "Locked files can’t be " + (what.equals("lock") ? "locked again." : "changed.");
+        if (n.locked() && !what.equals("checkout") && !what.equals("lock")) return "Locked files can’t be changed. Unlock it first.";
         return switch (what) {
             case "sign" -> FileKinds.canSign(n.ext()) ? null : FileKinds.plural(n.ext()) + " can’t be signed.";
             case "mark" -> FileKinds.canStamp(n.ext()) ? null : FileKinds.plural(n.ext()) + " can’t be stamped.";
@@ -1082,6 +1087,7 @@ public class ExplorerView {
         convertBtn.setWhyNot(s == null ? "Select a file first." : !s.isFile() ? "Choose a file, not a folder." : null);
         signBtn.setWhyNot(whyNotModify(s, "sign"));
         lockBtn.setWhyNot(whyNotModify(s, "lock"));
+        lockBtn.setText(s != null && s.locked() ? "Unlock" : "Lock");
         markBtn.setWhyNot(whyNotModify(s, "mark"));
         propsBtn.setWhyNot(s == null && current == null ? "Select a file or folder first." : null);
         statusClip.setText(clip == null ? "" : (clipCut ? "Cut: " : "Copied: ") + clip.fullName());
@@ -1113,7 +1119,7 @@ public class ExplorerView {
                 switch (action) {
                     case "convert" -> DocDialogs.convert(frame, api, x, ExplorerView.this::afterAction);
                     case "sign" -> DocDialogs.sign(frame, api, user, x, ExplorerView.this::afterAction);
-                    case "lock" -> DocDialogs.lock(frame, api, x, ExplorerView.this::afterAction);
+                    case "lock" -> lockOrUnlock(x);
                     default -> DocDialogs.stamp(frame, api, x, ExplorerView.this::afterAction);
                 }
             }
@@ -1280,6 +1286,12 @@ public class ExplorerView {
                 Toast.error(frame, e.getMessage());
             }
         });
+    }
+
+    private void lockOrUnlock(NodeInfo n) {
+        if (n == null) return;
+        if (n.locked()) DocDialogs.unlock(frame, api, n, this::afterAction);
+        else DocDialogs.lock(frame, api, n, this::afterAction);
     }
 
     // ------------------------------------------------------------------ check-out / check-in

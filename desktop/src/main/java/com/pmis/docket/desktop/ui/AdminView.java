@@ -199,16 +199,25 @@ public class AdminView {
         if (!quotas.contains(q)) quotas.add(0, q);
         Chips quota = new Chips(quotas, q);
         Chips role = new Chips(List.of("User", "IT administrator"), "ADMIN".equals(u.role()) ? "IT administrator" : "User");
-        CheckBox active = new CheckBox("Account active (turn off to block sign-in; files are kept)");
+        Check active = new Check("Account active (turn off to block sign-in and sign them out; files are kept)");
         active.setSelected(u.active());
         Button reset = new Button("Reset password", Icons.of(Icons.KEY, 14));
         reset.getStyleClass().addAll("btn", "btn-outline", "btn-small");
         reset.setOnAction(e -> Dialogs.confirm(frame, "Reset password?", u.displayName(),
                 "A new temporary password will be created. Their current password stops working.", "Reset", false,
                 () -> Async.run(() -> api.resetPassword(u.id()), t -> DocDialogs.tempPassword(frame, t), this::fail)));
+        Button delete = new Button("Delete user…", Icons.of(Icons.TRASH, 14));
+        delete.getStyleClass().addAll("btn", "btn-outline", "btn-small", "danger-text");
+        Dialogs.Handle[] self = new Dialogs.Handle[1];
+        delete.setOnAction(e -> {
+            self[0].close();
+            deleteUser(u);
+        });
+        delete.setDisable(u.id().equals(me.id()));
+        HBox accountActions = new HBox(8, reset, delete);
         VBox body = new VBox(8, DocDialogs.label("DEPARTMENT", "section-label"), dept, DocDialogs.label("STORAGE FOR MY FILES", "section-label"), quota,
-                DocDialogs.label("ROLE", "section-label"), role, active, reset);
-        Dialogs.show(frame, "Edit user", u.displayName() + " · PMIS\\" + u.login(), body, "Save", false, true, 520, h -> {
+                DocDialogs.label("ROLE", "section-label"), role, active, DocDialogs.label("ACCOUNT", "section-label"), accountActions);
+        self[0] = Dialogs.show(frame, "Edit user", u.displayName() + " · PMIS\\" + u.login(), body, "Save", false, true, 520, h -> {
             Map<String, Object> req = new HashMap<>();
             req.put("department", dept.value());
             req.put("role", role.value().equals("IT administrator") ? "ADMIN" : "USER");
@@ -227,6 +236,57 @@ public class AdminView {
         });
     }
 
+    private void deleteUser(Model.AdminUser u) {
+        Async.run(api::adminUsers, all -> {
+            List<Model.AdminUser> others = all.stream().filter(x -> !x.id().equals(u.id()) && x.active()).toList();
+            boolean hasFiles = u.usedBytes() > 0;
+            Chips what = new Chips(List.of("Give their files to a colleague", "Delete their files"), "Give their files to a colleague");
+            ComboBox<String> to = new ComboBox<>();
+            Map<String, Long> ids = new LinkedHashMap<>();
+            for (Model.AdminUser x : others) ids.put(x.displayName() + " (" + x.login() + ")", x.id());
+            to.getItems().addAll(ids.keySet());
+            to.setPromptText("Choose who receives the files");
+            to.getStyleClass().add("combo");
+            to.setMaxWidth(Double.MAX_VALUE);
+            Label filesNote = DocDialogs.label(hasFiles ? "Their My files holds " + Format.size(u.usedBytes()) + "." : "Their My files is empty.", "muted");
+            what.setOnChange(v -> {
+                to.setVisible(v.startsWith("Give"));
+                to.setManaged(v.startsWith("Give"));
+            });
+            Label warn = DocDialogs.label("This can’t be undone. They can no longer sign in, and their shares and folder permissions are removed. "
+                    + "Everything they did stays in the audit log. To only block sign-in, turn off “Account active” instead.", "callout-warn");
+            warn.setMaxWidth(Double.MAX_VALUE);
+            VBox body = new VBox(10, filesNote);
+            if (hasFiles) body.getChildren().addAll(DocDialogs.label("THEIR FILES", "section-label"), what, to);
+            body.getChildren().add(warn);
+            Dialogs.show(frame, "Delete user", u.displayName() + " · PMIS\\" + u.login(), body, "Delete user", true, true, 520, h -> {
+                Long target = null;
+                boolean deleteFiles = false;
+                if (hasFiles) {
+                    if (what.value().startsWith("Give")) {
+                        if (to.getValue() == null) {
+                            Toast.error(frame, "Choose who receives the files.");
+                            return false;
+                        }
+                        target = ids.get(to.getValue());
+                    } else deleteFiles = true;
+                }
+                Long t = target;
+                boolean df = deleteFiles;
+                h.busy("Deleting…");
+                Async.run(() -> api.deleteUser(u.id(), t, df), m -> {
+                    h.close();
+                    Toast.show(frame, m.message());
+                    users();
+                }, e -> {
+                    h.idle();
+                    Toast.error(frame, ApiException.messageOf(e));
+                });
+                return false;
+            });
+        }, this::fail);
+    }
+
     private static String suggestLogin(String name) {
         String[] p = name.trim().toLowerCase(Locale.ROOT).split("\\s+");
         if (p.length == 0 || p[0].isEmpty()) return "";
@@ -239,20 +299,28 @@ public class AdminView {
 
     private void permissions(Long select) {
         Async.run(api::adminFolders, folders -> {
-            VBox tree = new VBox(1);
-            tree.getStyleClass().add("perm-tree");
-            StackPane detail = new StackPane(DocDialogs.label("Choose a folder on the left.", "muted"));
+            VBox tree = new VBox(2);
+            tree.getStyleClass().add("perm-tree-list");
+            VBox detailBox = new VBox();
+            StackPane detail = new StackPane(detailBox);
+            detail.setAlignment(Pos.TOP_LEFT);
             Map<Long, Button> btns = new HashMap<>();
             for (Model.Folder f : folders) {
                 Label l = new Label(f.name());
-                HBox.setHgrow(l, Priority.ALWAYS);
+                l.setMinWidth(0);
                 l.setMaxWidth(Double.MAX_VALUE);
+                HBox.setHgrow(l, Priority.ALWAYS);
                 HBox c = new HBox(8, FileIcon.folder(18, false), l);
-                if (!f.hasOwnPermissions()) c.getChildren().add(DocDialogs.label("inherits", "muted-tiny"));
+                if (!f.hasOwnPermissions()) {
+                    Label inh = new Label("inherits");
+                    inh.getStyleClass().add("muted-tiny");
+                    inh.setMinWidth(Region.USE_PREF_SIZE);
+                    c.getChildren().add(inh);
+                }
                 c.setAlignment(Pos.CENTER_LEFT);
                 Button b = new Button();
                 b.setGraphic(c);
-                b.getStyleClass().add("side-item");
+                b.getStyleClass().addAll("side-item", "perm-item");
                 b.setMaxWidth(Double.MAX_VALUE);
                 b.setPadding(new Insets(0, 10, 0, 10 + f.depth() * 18));
                 b.setOnAction(e -> {
@@ -263,15 +331,35 @@ public class AdminView {
                 btns.put(f.id(), b);
                 tree.getChildren().add(b);
             }
-            tree.setMinWidth(250);
-            tree.setMaxWidth(250);
-            HBox.setHgrow(detail, Priority.ALWAYS);
-            detail.setAlignment(Pos.TOP_LEFT);
-            HBox body = new HBox(16, tree, detail);
-            show("Folder permissions", "Pick a company folder, then choose what each group or person can do there.", null, body);
+            ScrollPane treeScroll = new ScrollPane(tree);
+            treeScroll.setFitToWidth(true);
+            treeScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+            treeScroll.getStyleClass().addAll("content-scroll", "perm-tree");
+            treeScroll.setMinWidth(260);
+            treeScroll.setPrefWidth(260);
+            treeScroll.setMaxWidth(260);
+            ScrollPane detailScroll = new ScrollPane(detail);
+            detailScroll.setFitToWidth(true);
+            detailScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+            detailScroll.getStyleClass().add("content-scroll");
+            HBox.setHgrow(detailScroll, Priority.ALWAYS);
+            HBox body = new HBox(18, treeScroll, detailScroll);
+            showFixed("Folder permissions", "Pick a company folder, then choose what each group or person can do there.", body);
             Long first = select != null ? select : folders.isEmpty() ? null : folders.get(0).id();
             if (first != null && btns.containsKey(first)) btns.get(first).fire();
         }, this::fail);
+    }
+
+    /** A page whose body fills the card and scrolls inside its own areas (no page-level scrolling). */
+    private void showFixed(String title, String subtitle, Region body) {
+        Label h = new Label(title);
+        h.getStyleClass().add("page-title");
+        VBox head = new VBox(3, h, DocDialogs.label(subtitle, "muted"));
+        VBox page = new VBox(18, head, body);
+        VBox.setVgrow(body, Priority.ALWAYS);
+        page.setPadding(new Insets(22, 24, 24, 24));
+        content.getChildren().setAll(page);
+        Anim.fadeUp(page, 0);
     }
 
     private void loadAcl(long nodeId, StackPane detail) {
@@ -281,6 +369,7 @@ public class AdminView {
     private void renderAcl(Model.Acl acl, StackPane detail) {
         VBox box = new VBox(12);
         box.getChildren().add(new VBox(2, DocDialogs.label(acl.name(), "section-title"), DocDialogs.label("\\\\SRV-FILES › " + acl.path(), "muted-small")));
+        box.setMaxWidth(760);
         if (acl.inherited()) {
             box.getChildren().add(DocDialogs.label("Inherited from " + (acl.inheritedFrom() == null ? "the company default (all staff: read only)" : "“" + acl.inheritedFrom() + "”")
                     + ". Changing a level gives this folder its own permissions.", "callout"));
@@ -292,8 +381,10 @@ public class AdminView {
             who.getStyleClass().add("strong");
             HBox.setHgrow(who, Priority.ALWAYS);
             who.setMaxWidth(Double.MAX_VALUE);
+            who.setMinWidth(120);
             HBox seg = new HBox(2);
             seg.getStyleClass().add("segmented");
+            seg.setMinWidth(Region.USE_PREF_SIZE);
             for (String[] lv : new String[][]{{"NONE", "No access"}, {"READ", "Read only"}, {"WRITE", "Read & write"}, {"FULL", "Full control"}}) {
                 Button b = new Button(lv[1]);
                 b.getStyleClass().add("seg");

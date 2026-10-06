@@ -30,6 +30,7 @@ public class DocketApp extends Application {
 
         frame = new WindowFrame(stage);
         Scene scene = frame.createScene(1280, 820);
+        com.pmis.docket.desktop.ui.SmoothScroll.install(scene);
         scene.getStylesheets().add(getClass().getResource("theme.css").toExternalForm());
 
         stage.setTitle("PMIS Docket");

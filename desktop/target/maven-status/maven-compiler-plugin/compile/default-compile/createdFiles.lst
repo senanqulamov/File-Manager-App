@@ -31,6 +31,7 @@ com\pmis\docket\desktop\api\Model$UserInfo.class
 com\pmis\docket\desktop\ui\FileIcon$1.class
 com\pmis\docket\desktop\ui\Icons.class
 com\pmis\docket\desktop\api\ApiClient$2.class
+com\pmis\docket\desktop\ui\Check.class
 com\pmis\docket\desktop\api\ApiException.class
 com\pmis\docket\desktop\CheckoutStore.class
 com\pmis\docket\desktop\ui\FileKinds$Kind.class
@@ -42,6 +43,7 @@ com\pmis\docket\desktop\api\ApiClient$24.class
 com\pmis\docket\desktop\api\ApiClient$34.class
 com\pmis\docket\desktop\api\ApiClient$48.class
 com\pmis\docket\desktop\DocketApp.class
+com\pmis\docket\desktop\api\ApiClient$51.class
 com\pmis\docket\desktop\api\ApiClient$41.class
 com\pmis\docket\desktop\ui\Async.class
 com\pmis\docket\desktop\api\Model$Conversions.class
@@ -57,6 +59,7 @@ com\pmis\docket\desktop\api\ApiClient$19.class
 com\pmis\docket\desktop\api\ApiClient$40.class
 com\pmis\docket\desktop\ui\Anim.class
 com\pmis\docket\desktop\ui\FileIcon.class
+com\pmis\docket\desktop\api\ApiClient$52.class
 com\pmis\docket\desktop\api\ApiClient$47.class
 com\pmis\docket\desktop\api\Model$PreviewInfo.class
 com\pmis\docket\desktop\api\ApiClient$12.class
@@ -99,6 +102,7 @@ com\pmis\docket\desktop\api\ApiClient$14.class
 com\pmis\docket\desktop\ui\Toast.class
 com\pmis\docket\desktop\api\ApiClient$20.class
 com\pmis\docket\desktop\api\Model$ActionResult.class
+com\pmis\docket\desktop\ui\SmoothScroll.class
 com\pmis\docket\desktop\api\ApiClient$27.class
 com\pmis\docket\desktop\api\ApiClient.class
 com\pmis\docket\desktop\ui\ExplorerView$Loc.class

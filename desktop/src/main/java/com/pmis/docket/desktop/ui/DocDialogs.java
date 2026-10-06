@@ -153,8 +153,8 @@ public final class DocDialogs {
             }
             strengthText.setText(b.isEmpty() ? "Use at least 6 characters. Longer is better." : new String[]{"Too short", "Weak", "Fair", "Good", "Strong"}[score] + " password");
         });
-        CheckBox print = new CheckBox("Allow printing");
-        CheckBox copy = new CheckBox("Allow copying text");
+        Check print = new Check("Allow printing");
+        Check copy = new Check("Allow copying text");
         boolean inPlace = FileKinds.locksInPlace(n.ext());
         boolean isPdf = "pdf".equalsIgnoreCase(n.ext());
         VBox body = new VBox(10, label("Password", "field-label"), pass, label("Confirm password", "field-label"), again, strength, strengthText);
@@ -183,6 +183,35 @@ public final class DocDialogs {
                 done.accept(r.node());
             }, e -> {
                 h.idle();
+                Toast.error(frame, ApiException.messageOf(e));
+            });
+            return false;
+        });
+    }
+
+    // ================================================================== unlock
+
+    public static void unlock(WindowFrame frame, ApiClient api, NodeInfo n, Consumer<NodeInfo> done) {
+        PasswordField pass = new PasswordField();
+        pass.getStyleClass().add("field");
+        boolean zip = "zip".equalsIgnoreCase(n.ext());
+        Label note = label(zip ? "The files inside the encrypted ZIP are put back in this folder without a password. The ZIP goes to the Recycle Bin."
+                : "The password is removed and the file is saved as a new version. The locked version stays in the history.", "callout");
+        note.setMaxWidth(Double.MAX_VALUE);
+        VBox body = new VBox(10, label("Password", "field-label"), pass, note);
+        Dialogs.show(frame, "Unlock", n.fullName(), body, "Unlock", false, true, 480, h -> {
+            if (pass.getText().isEmpty()) {
+                Anim.shake(pass);
+                return false;
+            }
+            h.busy("Unlocking…");
+            Async.run(() -> api.unlock(n.id(), pass.getText()), r -> {
+                h.close();
+                Toast.show(frame, r.message());
+                done.accept(r.node());
+            }, e -> {
+                h.idle();
+                Anim.shake(pass);
                 Toast.error(frame, ApiException.messageOf(e));
             });
             return false;
@@ -255,9 +284,9 @@ public final class DocDialogs {
             for (Model.ShareInfo s : existing) already.add(s.userId());
             VBox list = new VBox(2);
             list.getStyleClass().add("pick-list");
-            Map<Long, CheckBox> picks = new LinkedHashMap<>();
+            Map<Long, Check> picks = new LinkedHashMap<>();
             for (Model.Person p : people) {
-                CheckBox cb = new CheckBox();
+                Check cb = new Check(null);
                 Label av = new Label(p.initials());
                 av.getStyleClass().add("avatar-purple");
                 Label name = new Label(p.name());
@@ -270,7 +299,7 @@ public final class DocDialogs {
                 HBox row = new HBox(10, cb, av, txt, g, tag);
                 row.setAlignment(Pos.CENTER_LEFT);
                 row.getStyleClass().add("pick-row");
-                row.setOnMouseClicked(e -> { if (e.getTarget() != cb) cb.setSelected(!cb.isSelected()); });
+                row.setOnMouseClicked(e -> cb.setSelected(!cb.isSelected()));
                 picks.put(p.id(), cb);
                 list.getChildren().add(row);
             }

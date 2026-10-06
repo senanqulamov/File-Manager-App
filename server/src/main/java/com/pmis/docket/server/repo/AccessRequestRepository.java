@@ -11,4 +11,6 @@ public interface AccessRequestRepository extends JpaRepository<AccessRequest, Lo
     List<AccessRequest> findByNodeIdAndUserIdAndStatus(Long nodeId, Long userId, AccessRequest.Status status);
 
     long countByStatus(AccessRequest.Status status);
+
+    List<AccessRequest> findByUserId(Long userId);
 }

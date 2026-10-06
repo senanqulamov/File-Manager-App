@@ -7,4 +7,6 @@ import java.time.Instant;
 
 public interface SessionRepository extends JpaRepository<SessionToken, String> {
     void deleteByExpiresAtBefore(Instant time);
+
+    void deleteByUserId(Long userId);
 }

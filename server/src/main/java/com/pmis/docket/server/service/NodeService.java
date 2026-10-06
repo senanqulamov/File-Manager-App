@@ -311,6 +311,10 @@ public class NodeService {
         if (!user.isAdmin() && !user.id.equals(n.deletedBy)) throw ApiException.forbidden("Only the person who deleted it or IT can restore it.");
         Node parent = nodes.findById(n.parentId).orElse(null);
         if (parent == null || parent.deleted) parent = n.space == Space.PERSONAL ? perms.personalRoot(n) : companyRoot();
+        if (n.space == Space.PERSONAL) {
+            Node root = perms.personalRoot(parent);
+            if (root == null || root.ownerId == null || users.findById(root.ownerId).isEmpty()) parent = personalRootOf(user);
+        }
         n.parentId = parent.id;
         n.name = uniqueName(parent.id, n.name, n.ext);
         restoreTree(n, n.deletedAt);

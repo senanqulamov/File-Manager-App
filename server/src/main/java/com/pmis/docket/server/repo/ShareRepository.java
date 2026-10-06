@@ -13,4 +13,6 @@ public interface ShareRepository extends JpaRepository<Share, Long> {
     List<Share> findByNodeIdAndWithUserId(Long nodeId, Long withUserId);
 
     long countByNodeId(Long nodeId);
+
+    List<Share> findByOwnerId(Long ownerId);
 }

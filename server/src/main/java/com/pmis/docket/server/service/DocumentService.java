@@ -30,6 +30,7 @@ import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.pdfbox.util.Matrix;
 import org.apache.poi.openxml4j.opc.OPCPackage;
+import org.apache.poi.poifs.crypt.Decryptor;
 import org.apache.poi.poifs.crypt.EncryptionInfo;
 import org.apache.poi.poifs.crypt.EncryptionMode;
 import org.apache.poi.poifs.crypt.Encryptor;
@@ -285,6 +286,93 @@ public class DocumentService {
             if (ex instanceof ApiException a) throw a;
             throw ApiException.conflict("Locking failed. The file may be damaged or already protected.");
         }
+    }
+
+    /**
+     * Removes the password: PDF and Office files get an unprotected new version; an encrypted ZIP made by Lock
+     * is unpacked back to the original file (the ZIP goes to the Recycle Bin). Needs the correct password.
+     */
+    @Transactional
+    public ActionResult unlock(User user, String computer, Long id, String password) {
+        Node n = nodes.requireFile(id);
+        nodes.requireModify(user, n);
+        if (password == null || password.isEmpty()) throw ApiException.badRequest("Type the password.");
+        String e = FileTypes.ext(n.ext);
+        Path src = storage.pathFor(n.blobKey);
+        try {
+            if (FileTypes.PDF.contains(e)) {
+                byte[] out;
+                try (PDDocument doc = Loader.loadPDF(src.toFile(), password)) {
+                    doc.setAllSecurityToBeRemoved(true);
+                    ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                    doc.save(bos);
+                    out = bos.toByteArray();
+                } catch (InvalidPasswordException ex) {
+                    throw ApiException.badRequest("Wrong password.");
+                }
+                return unlockedVersion(user, computer, n, out, "pdf");
+            }
+            if (FileTypes.OOXML.contains(e) || "doc".equals(e) || "xls".equals(e) || "ppt".equals(e)) {
+                byte[] out;
+                try (InputStream in = Files.newInputStream(src); POIFSFileSystem fs = new POIFSFileSystem(in)) {
+                    EncryptionInfo info = new EncryptionInfo(fs);
+                    Decryptor d = Decryptor.getInstance(info);
+                    if (!d.verifyPassword(password)) throw ApiException.badRequest("Wrong password.");
+                    try (InputStream data = d.getDataStream(fs)) {
+                        out = data.readAllBytes();
+                    }
+                }
+                return unlockedVersion(user, computer, n, out, e);
+            }
+            if (e.equals("zip")) {
+                Node parent = nodeRepo.findById(n.parentId).orElseThrow();
+                nodes.requireWriteInside(user, parent);
+                try (ZipFile zip = new ZipFile(src.toFile(), password.toCharArray())) {
+                    List<net.lingala.zip4j.model.FileHeader> headers = zip.getFileHeaders();
+                    if (headers.isEmpty()) throw ApiException.badRequest("This ZIP is empty.");
+                    if (!zip.isEncrypted()) throw ApiException.badRequest("This ZIP has no password.");
+                    List<Node> created = new ArrayList<>();
+                    for (net.lingala.zip4j.model.FileHeader h : headers) {
+                        if (h.isDirectory()) continue;
+                        String name = h.getFileName().replace('\\', '/');
+                        name = name.substring(name.lastIndexOf('/') + 1);
+                        String[] split = NodeService.splitName(name);
+                        try (InputStream in = zip.getInputStream(h)) {
+                            created.add(nodes.addFile(parent, split[0], split[1], storage.store(in), user, "Unlocked from " + n.fullName()));
+                        }
+                    }
+                    n.deleted = true;
+                    n.deletedAt = java.time.Instant.now();
+                    n.deletedBy = user.id;
+                    n.deleteRoot = true;
+                    nodeRepo.save(n);
+                    Node first = created.isEmpty() ? parent : created.get(0);
+                    audit.record(user, computer, "Unlocked encrypted ZIP “" + n.fullName() + "” (ZIP moved to Recycle Bin)", "Edited", first, nodes.pathText(first.id));
+                    return new ActionResult(nodes.toDto(user, first), "Unlocked. " + (created.size() == 1 ? first.fullName() + " is" : created.size() + " files are") + " back without a password.");
+                } catch (net.lingala.zip4j.exception.ZipException ex) {
+                    if (ex.getType() == net.lingala.zip4j.exception.ZipException.Type.WRONG_PASSWORD
+                            || String.valueOf(ex.getMessage()).toLowerCase(Locale.ROOT).contains("password")) {
+                        throw ApiException.badRequest("Wrong password.");
+                    }
+                    throw ApiException.conflict("This ZIP couldn’t be opened. It may be damaged.");
+                }
+            }
+            throw ApiException.badRequest("This type of file can’t be unlocked in Docket. Use Open in app.");
+        } catch (ApiException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            String m = String.valueOf(ex.getMessage()).toLowerCase(Locale.ROOT);
+            if (m.contains("password")) throw ApiException.badRequest("Wrong password.");
+            throw ApiException.conflict("Unlocking failed. This file may not be password-protected.");
+        }
+    }
+
+    private ActionResult unlockedVersion(User user, String computer, Node n, byte[] bytes, String ext) {
+        Node r = nodes.addVersion(n, storage.store(bytes), ext, user, "Password removed");
+        r.locked = false;
+        nodeRepo.save(r);
+        audit.record(user, computer, "Removed password (unlocked)", "Edited", n, nodes.pathText(n.id));
+        return new ActionResult(nodes.toDto(user, r), "Unlocked. " + n.fullName() + " opens without a password now (version " + r.version + ").");
     }
 
     private ActionResult lockedVersion(User user, String computer, Node n, byte[] bytes, String ext, String note) {

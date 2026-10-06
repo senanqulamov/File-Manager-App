@@ -108,6 +108,10 @@ public class WindowFrame {
 
         titleCenter.setAlignment(Pos.CENTER);
         titleRight.setAlignment(Pos.CENTER_RIGHT);
+        // Keep the navigation pills and account chip at their own height (as in the design),
+        // instead of stretching to the full 52 px title bar.
+        titleCenter.setFillHeight(false);
+        titleRight.setFillHeight(false);
 
         Button min = windowButton("M0 5 H10", "Minimize");
         min.setOnAction(e -> stage.setIconified(true));

@@ -61,6 +61,8 @@ public final class Dto {
 
     public record StampRequest(String text, String color) { }
 
+    public record UnlockRequest(String password) { }
+
     public record ActionResult(NodeDto node, String message) { }
 
     public record PreviewInfo(String kind, int pages, String message) { }

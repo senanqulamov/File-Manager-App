@@ -48,6 +48,13 @@ public class AdminController {
         return admin.updateUser(user, computer, id, req);
     }
 
+    @DeleteMapping("/users/{id}")
+    public Map<String, String> deleteUser(@RequestAttribute(U) User user, @RequestAttribute(value = C, required = false) String computer,
+                                          @PathVariable Long id, @RequestParam(required = false) Long transferTo,
+                                          @RequestParam(defaultValue = "false") boolean deleteFiles) {
+        return Map.of("message", admin.deleteUser(user, computer, id, transferTo, deleteFiles));
+    }
+
     @PostMapping("/users/{id}/reset-password")
     public TempPasswordDto reset(@RequestAttribute(U) User user, @RequestAttribute(value = C, required = false) String computer, @PathVariable Long id) {
         return admin.resetPassword(user, computer, id);

@@ -448,3 +448,37 @@
 .slider .track { -fx-background-color: rgba(255,255,255,0.25); -fx-background-radius: 3; -fx-pref-height: 4; }
 .audio-card .slider .track { -fx-background-color: dk-line; }
 .slider .thumb { -fx-background-color: dk-blue; -fx-background-radius: 999; -fx-padding: 6; }
+
+/* error toast */
+.toast-check.toast-error { -fx-background-color: #E5484D; -fx-font-weight: 800; -fx-font-size: 13px; }
+
+/* viewer toolbar */
+.viewer-title-chip { -fx-background-color: dk-soft; -fx-background-radius: 999; -fx-padding: 4 10; -fx-font-size: 11px; -fx-font-weight: 700; -fx-text-fill: dk-muted; }
+.viewer-tools { -fx-padding: 10 14; }
+.page-label { -fx-font-size: 12px; -fx-font-weight: 700; -fx-min-width: 86; -fx-alignment: center; }
+.zoom-label { -fx-font-size: 12px; -fx-font-weight: 700; -fx-min-width: 46; -fx-alignment: center; }
+
+/* custom checkbox */
+.dk-check { -fx-cursor: hand; -fx-padding: 4 0; }
+.dk-check-box { -fx-background-color: white; -fx-border-color: #B8BEC9; -fx-border-width: 1.5; -fx-border-radius: 6; -fx-background-radius: 6; }
+.dk-check:hover .dk-check-box { -fx-border-color: dk-blue; }
+.dk-check-box.on { -fx-background-color: dk-blue; -fx-border-color: dk-blue; icon-color: white; }
+.dk-check-text { -fx-font-size: 13px; -fx-text-fill: dk-ink; }
+
+/* folder permissions */
+.perm-tree { -fx-border-color: dk-line; -fx-border-radius: 16; -fx-background-radius: 16; }
+.perm-tree-list { -fx-padding: 6; }
+.perm-item { -fx-min-height: 38; -fx-pref-height: 38; -fx-max-height: 38; }
+
+/* thin, quiet scroll bars everywhere */
+.scroll-pane > .scroll-bar:vertical, .scroll-pane > .scroll-bar:horizontal { -fx-background-color: transparent; -fx-padding: 2; }
+.scroll-pane > .scroll-bar:vertical { -fx-pref-width: 10; }
+.scroll-pane > .scroll-bar:horizontal { -fx-pref-height: 10; }
+.scroll-bar > .thumb { -fx-background-color: rgba(26,28,36,0.22); -fx-background-radius: 999; }
+.scroll-bar > .thumb:hover, .scroll-bar > .thumb:pressed { -fx-background-color: rgba(26,28,36,0.4); }
+.scroll-bar > .track, .scroll-bar > .track-background { -fx-background-color: transparent; }
+.scroll-bar > .increment-button, .scroll-bar > .decrement-button { -fx-padding: 0; -fx-pref-height: 0; -fx-pref-width: 0; }
+.scroll-bar > .increment-button > .increment-arrow, .scroll-bar > .decrement-button > .decrement-arrow { -fx-padding: 0; -fx-shape: ""; }
+.scroll-pane > .corner { -fx-background-color: transparent; }
+.dialog-head { -fx-padding: 20 22 0 22; }
+.dialog-body { -fx-padding: 14 22 20 22; }

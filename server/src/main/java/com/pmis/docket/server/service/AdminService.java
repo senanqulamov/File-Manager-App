@@ -36,10 +36,13 @@ public class AdminService {
     private final StorageService storage;
     private final ToolService tools;
     private final DocketProperties props;
+    private final SessionRepository sessions;
 
     public AdminService(UserRepository users, NodeRepository nodes, AclRepository acls, AccessRequestRepository requests,
                         AuditRepository auditRepo, FileVersionRepository versions, ShareRepository shares, NodeService nodeService,
-                        AuthService auth, AuditService audit, StorageService storage, ToolService tools, DocketProperties props) {
+                        AuthService auth, AuditService audit, StorageService storage, ToolService tools, DocketProperties props,
+                        SessionRepository sessions) {
+        this.sessions = sessions;
         this.users = users;
         this.nodes = nodes;
         this.acls = acls;
@@ -129,7 +132,8 @@ public class AdminService {
         if (r.active() != null && r.active() != u.active) {
             if (u.id.equals(admin.id) && !r.active()) throw ApiException.badRequest("You can’t disable your own account.");
             u.active = r.active();
-            changes.add(u.active ? "enabled" : "disabled");
+            if (!u.active) sessions.deleteByUserId(u.id);
+            changes.add(u.active ? "enabled" : "disabled (signed out everywhere)");
         }
         users.save(u);
         if (!changes.isEmpty()) audit.record(admin, computer, "Updated user " + u.displayName + ": " + String.join(", ", changes), "Permissions", null);
@@ -146,6 +150,80 @@ public class AdminService {
         users.save(u);
         audit.record(admin, computer, "Reset password for " + u.displayName, "Permissions", null);
         return new TempPasswordDto(toDto(u), temp);
+    }
+
+    /**
+     * Deletes an account. Their My files are either moved to a colleague (into a folder "From <name>")
+     * or moved to the Recycle Bin. Their shares, sessions, requests and folder permission lines are removed,
+     * files they had checked out are released. The audit log keeps everything they did.
+     */
+    @Transactional
+    public String deleteUser(User admin, String computer, Long id, Long transferTo, boolean deleteFiles) {
+        requireAdmin(admin);
+        User u = users.findById(id).orElseThrow(() -> ApiException.notFound("This user"));
+        if (u.id.equals(admin.id)) throw ApiException.badRequest("You can’t delete your own account.");
+        if (u.isAdmin() && users.findAll().stream().filter(x -> x.isAdmin() && x.active && !x.id.equals(u.id)).count() == 0) {
+            throw ApiException.badRequest("This is the last IT administrator. Make someone else an administrator first.");
+        }
+        Node root = nodes.findFirstByTypeAndSpaceAndOwnerId(NodeType.ROOT, Space.PERSONAL, u.id).orElse(null);
+        List<Node> items = root == null ? List.of() : nodes.findByParentIdAndDeletedFalse(root.id);
+        String filesNote;
+        if (items.isEmpty()) {
+            filesNote = "My files was empty";
+        } else if (transferTo != null) {
+            User to = users.findById(transferTo).orElseThrow(() -> ApiException.notFound("The person receiving the files"));
+            if (to.id.equals(u.id)) throw ApiException.badRequest("Choose someone else to receive the files.");
+            Node toRoot = nodeService.personalRootOf(to);
+            Node folder = new Node();
+            folder.parentId = toRoot.id;
+            folder.type = NodeType.FOLDER;
+            folder.space = Space.PERSONAL;
+            folder.ownerId = to.id;
+            folder.name = nodeService.uniqueName(toRoot.id, "From " + u.displayName, null);
+            folder.createdAt = folder.modifiedAt = Instant.now();
+            folder.modifiedBy = admin.id;
+            nodes.save(folder);
+            for (Node n : items) {
+                n.parentId = folder.id;
+                nodes.save(n);
+            }
+            filesNote = items.size() + " items moved to " + to.displayName + "’s My files › " + folder.name;
+        } else if (deleteFiles) {
+            Instant now = Instant.now();
+            for (Node n : items) {
+                markDeleted(n, now, admin.id);
+                n.deleteRoot = true;
+                nodes.save(n);
+            }
+            filesNote = items.size() + " items moved to the Recycle Bin";
+        } else {
+            throw ApiException.badRequest("Choose who receives their files, or delete the files.");
+        }
+        for (Share sh : shares.findByOwnerId(u.id)) shares.delete(sh);
+        for (Share sh : shares.findByWithUserId(u.id)) shares.delete(sh);
+        for (AccessRequest r : requests.findByUserId(u.id)) requests.delete(r);
+        for (AclEntry a : acls.findAll()) if (a.principal.equals("user:" + u.id)) acls.delete(a);
+        for (Node n : nodes.findAll()) {
+            if (u.id.equals(n.checkedOutBy)) {
+                n.checkedOutBy = null;
+                n.checkedOutAt = null;
+                nodes.save(n);
+            }
+        }
+        sessions.deleteByUserId(u.id);
+        String name = u.displayName + " (" + u.login + ")";
+        users.delete(u);
+        String msg = "Deleted " + name + ". " + filesNote + ".";
+        audit.record(admin, computer, msg, "Permissions", null);
+        return msg;
+    }
+
+    private void markDeleted(Node n, Instant when, Long by) {
+        n.deleted = true;
+        n.deletedAt = when;
+        n.deletedBy = by;
+        nodes.save(n);
+        for (Node c : nodes.findByParentIdAndDeletedFalse(n.id)) markDeleted(c, when, by);
     }
 
     // ================================================================== folder permissions

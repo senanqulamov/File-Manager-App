@@ -91,7 +91,8 @@ public final class Dialogs {
             s.getStyleClass().add("dialog-subtitle");
             head.getChildren().add(s);
         }
-        VBox content = new VBox(14, head);
+        head.getStyleClass().add("dialog-head");
+        VBox content = new VBox(14);
         if (body != null) content.getChildren().add(body);
         content.getStyleClass().add("dialog-body");
 
@@ -113,7 +114,8 @@ public final class Dialogs {
         if (showCancel) footer.getChildren().add(cancel);
         footer.getChildren().add(primary);
 
-        VBox card = new VBox(top, scroll, footer);
+        // Title stays in place; only the body scrolls when the window is small.
+        VBox card = body != null ? new VBox(top, head, scroll, footer) : new VBox(top, head, footer);
         card.getStyleClass().add("dialog-card");
         card.setMaxWidth(width);
         card.setMaxHeight(Region.USE_PREF_SIZE);
